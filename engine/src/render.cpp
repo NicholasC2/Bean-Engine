@@ -1,5 +1,7 @@
 #include "render.h"
+#include "logo_bmp.h"
 #include <SDL3/SDL.h>
+#include <chrono>
 
 namespace Render {
 
@@ -45,7 +47,43 @@ bool initRenderer() {
         std::cerr << "SDL_CreateRenderer failed: " << SDL_GetError() << "\n";
         return false;
     }
-    return true;
+
+    SDL_IOStream* io = SDL_IOFromMem((void*)logo_bmp, logo_bmp_size);
+    SDL_Surface* surface = SDL_LoadBMP_IO(io, 1);
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    Texture* tex = new Texture{texture};
+
+    Uint32 frameStart;
+    int frameTime;
+    bool running = true;
+    int opacity = 0;
+    int i = 0;
+    while(i < 120 && running) {
+        frameStart = SDL_GetTicks();
+
+        pollEvents(running);
+        clearScreen();
+
+        if(i < 30) {
+            opacity++;
+        }
+        if(i >= 90) {
+            opacity--;
+        }
+        drawTexture(tex, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f);
+        
+        presentScreen();
+
+        frameTime = SDL_GetTicks() - frameStart;
+        if (1000 / 60 > frameTime) {
+            SDL_Delay(1000 / 60 - frameTime);
+        }
+
+        i++;
+    }
+
+    SDL_DestroySurface(surface);
+    return running;
 }
 
 void shutdownRenderer() {

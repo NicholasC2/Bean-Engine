@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-# project(example)
+project(deathsmode)
 
 if(WIN32)
     set(PLATFORM_WINDOWS ON)
@@ -11,4 +11,4 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Nintendo3DS")
 endif()
 
 add_subdirectory(engine)
-# add_subdirectory(games/example)
+add_subdirectory(games/Deathsmode)
