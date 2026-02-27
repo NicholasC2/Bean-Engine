@@ -41,6 +41,57 @@ void getWindowSize(int &w, int &h) {
     SDL_GetWindowSizeInPixels(window, &w, &h);
 }
 
+Texture* getDefaultLogo() {
+    SDL_IOStream* io = SDL_IOFromMem((void*)__logo_bmp, __logo_bmp_size);
+    SDL_Surface* surface = SDL_LoadBMP_IO(io, 1);
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_DestroySurface(surface);
+
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+    Texture* tex = new Texture{ texture };
+
+    return tex;
+}
+
+void displayLogo(Texture* tex) {
+    SDL_SetTextureBlendMode(tex->handle, SDL_BLENDMODE_BLEND);
+
+    Uint64 startTicks = SDL_GetTicks();
+    bool running = true;
+    int i = 0;
+
+    while(SDL_GetTicks() - startTicks < 4000 && running) {
+        Uint64 elapsed = SDL_GetTicks() - startTicks;
+
+        pollEvents(running);
+        clearScreen();
+
+        Uint8 alpha = 255;
+
+        if (elapsed < 1000) {
+            alpha = (Uint8)((elapsed / 1000.0f) * 255.0f);
+        }
+        else if (elapsed > 2000 && elapsed < 3000) {
+            float fadeProgress = (elapsed - 2000) / 1000.0f;
+            alpha = (Uint8)((1.0f - fadeProgress) * 255.0f);
+        }
+        
+        if(elapsed < 3000) { 
+            SDL_SetTextureAlphaMod(tex->handle, alpha);
+
+            drawTexture(tex, 0.9f, 0.5f, 0.7f, 7.0f / 12.0f * 0.7f, 0.0f);
+        }
+
+        presentScreen();
+
+        i++;
+    }
+
+    freeTexture(tex);
+}
+
 bool initRenderer() {
     renderer = SDL_CreateRenderer(window, nullptr);
     if (!renderer) {
@@ -48,42 +99,9 @@ bool initRenderer() {
         return false;
     }
 
-    SDL_IOStream* io = SDL_IOFromMem((void*)logo_bmp, logo_bmp_size);
-    SDL_Surface* surface = SDL_LoadBMP_IO(io, 1);
-    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    Texture* tex = new Texture{texture};
+    SDL_SetDefaultTextureScaleMode(renderer, SDL_SCALEMODE_PIXELART);
 
-    Uint32 frameStart;
-    int frameTime;
-    bool running = true;
-    int opacity = 0;
-    int i = 0;
-    while(i < 120 && running) {
-        frameStart = SDL_GetTicks();
-
-        pollEvents(running);
-        clearScreen();
-
-        if(i < 30) {
-            opacity++;
-        }
-        if(i >= 90) {
-            opacity--;
-        }
-        drawTexture(tex, 0.5f, 0.5f, 1.0f, 1.0f, 0.0f);
-        
-        presentScreen();
-
-        frameTime = SDL_GetTicks() - frameStart;
-        if (1000 / 60 > frameTime) {
-            SDL_Delay(1000 / 60 - frameTime);
-        }
-
-        i++;
-    }
-
-    SDL_DestroySurface(surface);
-    return running;
+    return true;
 }
 
 void shutdownRenderer() {

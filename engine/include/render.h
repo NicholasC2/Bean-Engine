@@ -6,6 +6,8 @@ struct Texture;
 
 bool initWindow(int width, int height, const char* title);
 void getWindowSize(int &w, int &h);
+Texture* getDefaultLogo();
+void displayLogo(Texture* tex);
 bool initRenderer();
 void shutdownRenderer();
 void shutdownWindow();
