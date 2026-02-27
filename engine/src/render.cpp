@@ -2,6 +2,8 @@
 #include "logo_bmp.h"
 #include <SDL3/SDL.h>
 #include <chrono>
+#include <string>
+#include "input.h"
 
 namespace Render {
 
@@ -14,18 +16,17 @@ static SDL_Renderer* renderer = nullptr;
 
 bool initWindow(int width, int height, const char* title) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
-        std::cerr << "SDL_Init failed: " << SDL_GetError() << "\n";
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_Init failed", SDL_GetError(), NULL);
         return false;
     }
 
     window = SDL_CreateWindow(title, width, height, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
     if (!window) {
-        std::cerr << "SDL_CreateWindow failed: " << SDL_GetError() << "\n";
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_CreateWindow failed", SDL_GetError(), NULL);
         return false;
     }
 
-    
     SDL_SetWindowAspectRatio(window, 16.2 / 9, 16.2 / 9);
 
     return true;
@@ -55,12 +56,15 @@ Texture* getDefaultLogo() {
     return tex;
 }
 
-void displayLogo(Texture* tex) {
+bool displayLogo(Texture* tex) {
     SDL_SetTextureBlendMode(tex->handle, SDL_BLENDMODE_BLEND);
 
+    Input::setDefaultBindings();
     Uint64 startTicks = SDL_GetTicks();
     bool running = true;
     int i = 0;
+
+    float ratio = (float)tex->handle->h / (float)tex->handle->w;
 
     while(SDL_GetTicks() - startTicks < 4000 && running) {
         Uint64 elapsed = SDL_GetTicks() - startTicks;
@@ -81,7 +85,13 @@ void displayLogo(Texture* tex) {
         if(elapsed < 3000) { 
             SDL_SetTextureAlphaMod(tex->handle, alpha);
 
-            drawTexture(tex, 0.9f, 0.5f, 0.7f, 7.0f / 12.0f * 0.7f, 0.0f);
+            drawTextureOnScreen(tex, 0.9f, 0.5f, 0.7f, ratio * 0.7f, 0.0f);
+        }
+
+        Input::poll();
+
+        if (Input::isPressed(Input::Action::Jump) || Input::isMousePressed()) {
+            return true;
         }
 
         presentScreen();
@@ -89,13 +99,17 @@ void displayLogo(Texture* tex) {
         i++;
     }
 
-    freeTexture(tex);
+    return running;
+}
+
+void setTextureAlpha(Texture* tex, int alpha) {
+    SDL_SetTextureAlphaMod(tex->handle, alpha);
 }
 
 bool initRenderer() {
     renderer = SDL_CreateRenderer(window, nullptr);
     if (!renderer) {
-        std::cerr << "SDL_CreateRenderer failed: " << SDL_GetError() << "\n";
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_CreateRenderer failed", SDL_GetError(), NULL);
         return false;
     }
 
@@ -147,13 +161,20 @@ Texture* loadTexture(const char* path) {
     return wrapper;
 }
 
-void freeTexture(Texture* tex) {
+void freeTexture(Texture*& tex) {
     if (!tex) return;
-    if (tex->handle) SDL_DestroyTexture(tex->handle);
+
+    if (tex->handle) {
+        SDL_DestroyTexture(tex->handle);
+        tex->handle = nullptr;
+    }
+
     delete tex;
+    tex = nullptr;
 }
 
-void drawTexture(Texture* tex, float x, float y, float w, float h, float angle) {
+void drawTextureOnScreen(Texture* tex, float x, float y, float w, float h, float angle, int screen)
+{
     if (!renderer || !tex || !tex->handle || !window) return;
 
     int winW, winH;
