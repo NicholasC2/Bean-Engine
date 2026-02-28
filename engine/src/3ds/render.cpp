@@ -39,11 +39,6 @@ Texture* getDefaultLogo() {
     C2D_SpriteSheet_s* sheet = C2D_SpriteSheetLoadFromMem(__logo_bmp, __logo_bmp_size);
     if (!sheet) { delete tex; return nullptr; }
 
-    for (int i = 0; i < __logo_bmp_size; i++) {
-        printf("%02X ", __logo_bmp[i]);
-        if ((i+1) % 16 == 0) printf("\n");
-    }
-
     tex->sheet = sheet;
     tex->handle = C2D_SpriteSheetGetImage(sheet, 0);
     tex->alpha = 255;
@@ -54,7 +49,6 @@ Texture* getDefaultLogo() {
 
 bool showError(const char* msg) {
     consoleClear();
-    printf("ERROR: %s\n", msg);
     return false;
 }
 
@@ -139,16 +133,12 @@ Texture* loadTexture(const char* path) {
     const uint8_t* data = asset->getData();
     size_t size = asset->getSize();
 
-    printf("[DEBUG] Loaded asset: %s, size: %zu bytes\n", path, size);
-
     C2D_SpriteSheet_s* sheet = C2D_SpriteSheetLoadFromMem(data, size);
     if (!sheet) { delete tex; return nullptr; }
 
     tex->handle = C2D_SpriteSheetGetImage(sheet, 0);
     tex->alpha = 255;
     tex->sheet = sheet;
-
-    printf("[DEBUG] Texture loaded successfully: %s\n", path);
 
     return tex;
 }
