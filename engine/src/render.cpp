@@ -62,6 +62,8 @@ bool showError(const char* msg) {
 }
 
 bool displayLogo(Texture* tex) {
+    if(!tex) return false;
+
     SDL_SetTextureBlendMode(tex->handle, SDL_BLENDMODE_BLEND);
 
     Input::setDefaultBindings();
@@ -108,6 +110,7 @@ bool displayLogo(Texture* tex) {
 }
 
 void setTextureAlpha(Texture* tex, int alpha) {
+    if(!tex) return;
     SDL_SetTextureAlphaMod(tex->handle, alpha);
 }
 

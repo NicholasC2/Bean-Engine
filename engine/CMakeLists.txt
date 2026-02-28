@@ -3,46 +3,18 @@ project(engine)
 
 include(FetchContent)
 
-function(import_box2d target_name)
-    FetchContent_Declare(
-        box2d
-        GIT_REPOSITORY https://github.com/erincatto/box2d.git
-        GIT_TAG v3.1.1
-    )
-    set(BUILD_SHARED_LIBS OFF)
-    FetchContent_MakeAvailable(box2d)
-    target_link_libraries(${target_name} PUBLIC box2d::box2d)
-endfunction()
-
-function(import_sdl3 target_name)
-    FetchContent_Declare(
-        SDL3
-        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
-        GIT_TAG release-3.4.0
-    )
-    set(SDL_SHARED OFF CACHE BOOL "" FORCE)
-    set(SDL_STATIC ON CACHE BOOL "" FORCE)
-    FetchContent_MakeAvailable(SDL3)
-    target_link_libraries(${target_name} PRIVATE SDL3::SDL3-static)
-endfunction()
-
 set(ENGINE_SOURCES)
 
 if(PLATFORM_3DS)
-    if(NOT DEFINED ASSET_DIR)
-        set(ASSET_DIR "${CMAKE_CURRENT_SOURCE_DIR}/assets")
-    endif()
-    file(GLOB_RECURSE ASSET_FILES "${ASSET_DIR}/*.*")
-
     add_compile_definitions(PLATFORM_3DS=1)
-    list(APPEND ENGINE_SOURCES 
+    list(APPEND ENGINE_SOURCES
         src/3ds/render.cpp
         src/3ds/input.cpp
         src/3ds/assets.cpp
     )
 else()
     add_compile_definitions(PLATFORM_SDL=1)
-    list(APPEND ENGINE_SOURCES 
+    list(APPEND ENGINE_SOURCES
         src/render.cpp
         src/input.cpp
         src/assets.cpp
@@ -52,14 +24,30 @@ endif()
 add_library(engine ${ENGINE_SOURCES})
 target_include_directories(engine PUBLIC include)
 
-if(PLATFORM_WINDOWS OR PLATFORM_LINUX)
-    import_box2d(engine)
-    import_sdl3(engine)
-elseif(PLATFORM_3DS)
-    target_link_libraries(engine PRIVATE
-        ctru
-        citro2d
-        citro3d)
+if(NOT PLATFORM_3DS)
+    FetchContent_Declare(
+        SDL3
+        GIT_REPOSITORY https://github.com/libsdl-org/SDL.git
+        GIT_TAG release-3.4.2
+    )
+    set(SDL_SHARED OFF CACHE BOOL "" FORCE)
+    set(SDL_STATIC ON CACHE BOOL "" FORCE)
+    FetchContent_MakeAvailable(SDL3)
+
+    target_link_libraries(engine PUBLIC SDL3::SDL3-static)
+endif()
+
+FetchContent_Declare(
+    box2d
+    GIT_REPOSITORY https://github.com/erincatto/box2d.git
+    GIT_TAG v3.1.1
+)
+set(BUILD_SHARED_LIBS OFF)
+FetchContent_MakeAvailable(box2d)
+target_link_libraries(engine PUBLIC box2d::box2d)
+
+if(PLATFORM_3DS)
+    target_link_libraries(engine PRIVATE ctru citro2d citro3d)
 
     set(ASSET_HEADER_DIR "${CMAKE_CURRENT_BINARY_DIR}/assets_headers")
     file(MAKE_DIRECTORY "${ASSET_HEADER_DIR}")

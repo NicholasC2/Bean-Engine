@@ -4,8 +4,7 @@
     #include "3ds/input.h"
     #include "3ds/render.h"
     #include "3ds/assets.h"
-
-#else
+#else 
     #include "input.h"
     #include "render.h"
     #include "assets.h"
