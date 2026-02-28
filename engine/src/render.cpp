@@ -4,6 +4,7 @@
 #include <chrono>
 #include <string>
 #include "input.h"
+#include "assets.h"
 
 namespace Render {
 
@@ -56,6 +57,10 @@ Texture* getDefaultLogo() {
     return tex;
 }
 
+bool showError(const char* msg) {
+    return SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error!", msg, window);
+}
+
 bool displayLogo(Texture* tex) {
     SDL_SetTextureBlendMode(tex->handle, SDL_BLENDMODE_BLEND);
 
@@ -83,7 +88,7 @@ bool displayLogo(Texture* tex) {
         }
         
         if(elapsed < 3000) { 
-            SDL_SetTextureAlphaMod(tex->handle, alpha);
+            setTextureAlpha(tex, alpha);
 
             drawTextureOnScreen(tex, 0.9f, 0.5f, 0.7f, ratio * 0.7f, 0.0f);
         }
@@ -151,13 +156,47 @@ void presentScreen() {
     SDL_RenderPresent(renderer);
 }
 
+inline bool ends_with(std::string const & value, std::string const & ending)
+{
+    if (ending.size() > value.size()) return false;
+    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
 Texture* loadTexture(const char* path) {
-    SDL_Surface* surface = SDL_LoadBMP(path);
-    if (!surface) return nullptr;
-    SDL_Texture* tex = SDL_CreateTextureFromSurface(renderer, surface);
+    Assets::Asset *asset = Assets::getAsset(path);
+    if (!asset || !asset->isValid())
+        return nullptr;
+
+    SDL_IOStream* io = SDL_IOFromMem((void*)asset->getData(), asset->getSize());
+    if (!io) {
+        showError(SDL_GetError());
+        return nullptr;
+    }
+
+    SDL_Surface* surface = nullptr;
+    
+    if(ends_with(std::string(path), ".png")) {
+        surface = SDL_LoadPNG_IO(io, 1);
+    } else if(ends_with(std::string(path), ".bmp")) {
+        surface = SDL_LoadBMP_IO(io, 1);
+    }
+
+    if (!surface) {
+        showError(SDL_GetError());
+        return nullptr;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_DestroySurface(surface);
-    if (!tex) return nullptr;
-    Texture* wrapper = new Texture{tex};
+
+    if (!texture) {
+        showError(SDL_GetError());
+        return nullptr;
+    }
+
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+
+    Texture* wrapper = new Texture{texture};
     return wrapper;
 }
 

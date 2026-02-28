@@ -1,4 +1,7 @@
 build/
+out/
 games/
+
+.vscode/
 
 CMakeLists.txt

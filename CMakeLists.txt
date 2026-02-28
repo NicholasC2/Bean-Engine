@@ -1,14 +1,16 @@
 cmake_minimum_required(VERSION 3.20)
 project(deathsmode)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(WIN32)
     set(PLATFORM_WINDOWS ON)
 elseif(UNIX AND NOT APPLE)
     set(PLATFORM_LINUX ON)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Nintendo3DS")
-    # set(PLATFORM_3DS ON)
-    # not supported yet
+    set(PLATFORM_3DS ON)
 endif()
 
+set(ASSET_DIR "${CMAKE_SOURCE_DIR}/games/deathsmode/assets" CACHE PATH "Asset folder for 3DS")
 add_subdirectory(engine)
 add_subdirectory(games/Deathsmode)
