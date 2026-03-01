@@ -15,7 +15,9 @@ if(PLATFORM_3DS)
 else()
     add_compile_definitions(PLATFORM_SDL=1)
     list(APPEND ENGINE_SOURCES
-        src/render.cpp
+        src/gfx/renderer.cpp
+        src/gfx/texture.cpp
+        src/gfx/window.cpp
         src/input.cpp
         src/assets.cpp
     )

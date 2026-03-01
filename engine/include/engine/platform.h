@@ -6,6 +6,8 @@
     #include "3ds/assets.h"
 #else 
     #include "input.h"
-    #include "render.h"
+    #include <gfx/renderer.h>
+    #include <gfx/texture.h>
+    #include <gfx/window.h>
     #include "assets.h"
 #endif

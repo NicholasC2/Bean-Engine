@@ -1,14 +1,12 @@
-#include "assets.h"
-#include "logo_bmp.h"
-#include <chrono>
-#include <string>
-#include "render.h"
+#include "engine/assets.h"
+#include "engine/gfx/window.h"
 #include <SDL3/SDL.h>
 #include <unordered_map>
 #include <filesystem>
 #include <fstream>
 #include <vector>
 #include <cstdint>
+#include <algorithm>
 
 #define ASSET_PATH ".\\assets"
 
@@ -50,7 +48,7 @@ namespace Assets {
             return &it->second;
 
         std::string errorMsg = "Invalid asset location: " + path;
-        Render::showError(errorMsg.c_str());
+        Window::showError(errorMsg.c_str());
 
         return {};
     }
