@@ -31,6 +31,8 @@ namespace Engine {
     }
 
     Texture* getDefaultLogo() {
+        Assets::Asset{}
+
         SDL_IOStream* io = SDL_IOFromMem((void*)__logo_bmp, __logo_bmp_size);
         SDL_Surface* surface = SDL_LoadBMP_IO(io, 1);
 
