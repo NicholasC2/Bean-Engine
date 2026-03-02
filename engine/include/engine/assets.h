@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/assets.h"
-#include "engine/gfx/window.h"
 #include <SDL3/SDL.h>
 #include <unordered_map>
 #include <filesystem>

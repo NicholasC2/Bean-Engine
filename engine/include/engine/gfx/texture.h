@@ -1,3 +1,5 @@
+#pragma once
+
 #include "engine/gfx/renderer.h"
 #include "engine/logo_bmp.h"
 #include "engine/assets.h"
@@ -6,8 +8,6 @@
 namespace Texture {
 
 struct Texture;
-
-Texture* getDefaultLogo();
 
 void setTextureAlpha(Texture* tex, int alpha);
 

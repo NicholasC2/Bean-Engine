@@ -17,7 +17,7 @@ else()
     list(APPEND ENGINE_SOURCES
         src/gfx/renderer.cpp
         src/gfx/texture.cpp
-        src/gfx/window.cpp
+        src/engine.cpp
         src/input.cpp
         src/assets.cpp
     )

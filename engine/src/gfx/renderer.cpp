@@ -1,5 +1,4 @@
 #include "engine/gfx/renderer.h"
-#include "engine/gfx/window.h"
 #include "engine/gfx/texture.h"
 #include "engine/input.h"
 #include "engine/assets.h"
@@ -7,10 +6,25 @@
 
 namespace Renderer {
 
+static SDL_Window* window = nullptr;
 static SDL_Renderer* renderer = nullptr;
 
-bool initRenderer() {
-    renderer = SDL_CreateRenderer(Window::window, nullptr);
+bool initRenderer(const char* title) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_Init failed", SDL_GetError(), NULL);
+        return false;
+    }
+
+    window = SDL_CreateWindow(title, 900, 500, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
+
+    if (!window) {
+        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_CreateWindow failed", SDL_GetError(), NULL);
+        return false;
+    }
+
+    SDL_SetWindowAspectRatio(window, 9 / 5, 9 / 5);
+
+    renderer = SDL_CreateRenderer(window, nullptr);
     if (!renderer) {
         SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_CreateRenderer failed", SDL_GetError(), NULL);
         return false;
@@ -26,6 +40,13 @@ void shutdownRenderer() {
         SDL_DestroyRenderer(renderer);
         renderer = nullptr;
     }
+
+    if (window) {
+        SDL_DestroyWindow(window);
+        window = nullptr;
+    }
+
+    SDL_Quit();
 }
 
 void clearScreen() {
@@ -35,6 +56,19 @@ void clearScreen() {
 
 void presentScreen() {
     SDL_RenderPresent(renderer);
+}
+
+bool showError(const char* msg) {
+    return SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR, "Error!", msg, window);
+}
+
+void pollEvents(bool& running) {
+    SDL_Event event;
+    while (SDL_PollEvent(&event)) {
+        if (event.type == SDL_EVENT_QUIT) {
+            running = false;
+        }
+    }
 }
 
 void drawTextureOnScreen(Texture::Texture* tex, float x, float y, float w, float h, float angle, int screen) {
