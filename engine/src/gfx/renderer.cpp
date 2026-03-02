@@ -5,9 +5,9 @@
 #include <SDL3/SDL.h>
 
 namespace Renderer {
-
-static SDL_Window* window = nullptr;
-static SDL_Renderer* renderer = nullptr;
+    
+SDL_Window* window = nullptr;
+SDL_Renderer* renderer = nullptr;
 
 bool initRenderer(const char* title) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
@@ -22,7 +22,7 @@ bool initRenderer(const char* title) {
         return false;
     }
 
-    SDL_SetWindowAspectRatio(window, 9 / 5, 9 / 5);
+    SDL_SetWindowAspectRatio(window, 9.0f / 5.0f, 9.0f / 5.0f);
 
     renderer = SDL_CreateRenderer(window, nullptr);
     if (!renderer) {
@@ -88,7 +88,7 @@ void drawTextureOnScreen(Texture::Texture* tex, float x, float y, float w, float
     SDL_RenderTextureRotated(renderer, tex->handle, nullptr, &dstRect, angle, &center, SDL_FLIP_NONE);
 }
 
-bool displayLogo(Texture* tex) {
+bool displayLogo(Texture::Texture* tex) {
     if(!tex) return false;
 
     SDL_SetTextureBlendMode(tex->handle, SDL_BLENDMODE_BLEND);

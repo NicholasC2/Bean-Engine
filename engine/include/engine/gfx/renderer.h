@@ -1,14 +1,17 @@
 #pragma once
 
-#include "engine/gfx/texture.h"
+#include <SDL3/SDL.h>
 #include "engine/input.h"
 #include "engine/assets.h"
-#include <SDL3/SDL.h>
+
+namespace Texture {
+    struct Texture;
+}
 
 namespace Renderer {
 
-static SDL_Window* window;
-static SDL_Renderer* renderer;
+extern SDL_Window* window;
+extern SDL_Renderer* renderer;
 
 bool initRenderer(const char* title);
 
@@ -22,8 +25,8 @@ bool showError(const char* msg);
 
 void pollEvents(bool& running);
 
-void drawTextureOnScreen(Texture::Texture* tex, float x, float y, float w, float h, float angle, int screen);
+void drawTextureOnScreen(Texture::Texture* tex, float x, float y, float w, float h, float angle = 0.0f, int screen = 0);
 
-bool displayLogo(Texture* tex);
+bool displayLogo(Texture::Texture* tex);
 
 }

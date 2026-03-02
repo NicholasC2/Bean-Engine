@@ -6,10 +6,6 @@
 
 namespace Texture {
 
-struct Texture {
-    SDL_Texture* handle;
-};
-
 void setTextureAlpha(Texture* tex, int alpha) {
     if(!tex) return;
     SDL_SetTextureAlphaMod(tex->handle, alpha);
@@ -20,27 +16,28 @@ inline bool ends_with(std::string const & value, std::string const & ending) {
     return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
 }
 
-Texture* loadTexture(const char* path) {
-    Assets::Asset *asset = Assets::getAsset(path);
+Texture* loadTexture(const Assets::Asset* asset) {
     if (!asset || !asset->isValid())
         return nullptr;
 
     SDL_IOStream* io = SDL_IOFromMem((void*)asset->getData(), asset->getSize());
     if (!io) {
-        Window::showError(SDL_GetError());
+        Renderer::showError(SDL_GetError());
         return nullptr;
     }
 
     SDL_Surface* surface = nullptr;
+
+    std::string path = asset->getPath();
     
-    if(ends_with(std::string(path), ".png")) {
+    if(ends_with(path, ".png")) {
         surface = SDL_LoadPNG_IO(io, 1);
     } else if(ends_with(std::string(path), ".bmp")) {
         surface = SDL_LoadBMP_IO(io, 1);
     }
 
     if (!surface) {
-        Window::showError(SDL_GetError());
+        Renderer::showError(SDL_GetError());
         return nullptr;
     }
 
@@ -48,13 +45,13 @@ Texture* loadTexture(const char* path) {
     SDL_DestroySurface(surface);
 
     if (!texture) {
-        Window::showError(SDL_GetError());
+        Renderer::showError(SDL_GetError());
         return nullptr;
     }
 
     SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
-    Texture* wrapper = new Texture{texture};
+    Texture* wrapper = new Texture{texture, texture->w, texture->h};
     return wrapper;
 }
 

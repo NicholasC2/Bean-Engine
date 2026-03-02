@@ -7,17 +7,6 @@
 
 namespace Input {
 
-enum class Action {
-    Jump,
-    Interact,
-    Sneak,
-    MoveForward,
-    MoveBackward,
-    MoveLeft,
-    MoveRight,
-    COUNT
-};
-
 bool prevMouseState = false;
 
 constexpr size_t ActionCount = static_cast<size_t>(Action::COUNT);

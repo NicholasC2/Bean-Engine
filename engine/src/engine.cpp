@@ -1,49 +1,42 @@
 #include "engine/gfx/renderer.h"
+#include "engine/gfx/texture.h"
 #include "engine/logo_bmp.h"
+#include "engine/engine.h"
 
 namespace Engine {
 
-    void init() {
-        if (!Renderer::initRenderer()) {
-            Render::showError("failed to initialize SDL Renderer");
-            return;
+    bool init(const char* title) {
+        if (!Renderer::initRenderer(title)) {
+            Renderer::showError("failed to initialize SDL Renderer");
+            return false;
         }
 
         if(!Assets::loadAllAssets()) {
             Renderer::showError("failed to load assets!");
-            return;
+            return false;
         }
         
         Input::setDefaultBindings();
+
+        Assets::Asset default_logo(
+            "default_logo.bmp",
+            std::vector<uint8_t>(__logo_bmp, __logo_bmp + __logo_bmp_size)
+        );
+
+        Texture::Texture* logo_tex = Texture::loadTexture(&default_logo);
         
-        if (!Renderer::displayLogo(Renderer::getDefaultLogo())) {
-            shutdown();
-            return;
+        if (!Renderer::displayLogo(logo_tex)) {
+            Texture::freeTexture(logo_tex);
+            return false;
         }
 
-        return;
+        return true;
     }
 
     void shutdown() {
-        Render::shutdownRenderer();
+        Renderer::shutdownRenderer();
         Assets::unloadAll();
         return;
-    }
-
-    Texture* getDefaultLogo() {
-        Assets::Asset{}
-
-        SDL_IOStream* io = SDL_IOFromMem((void*)__logo_bmp, __logo_bmp_size);
-        SDL_Surface* surface = SDL_LoadBMP_IO(io, 1);
-
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(Renderer::renderer, surface);
-        SDL_DestroySurface(surface);
-
-        SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
-
-        Texture* tex = new Texture{ texture };
-
-        return tex;
     }
 
 }

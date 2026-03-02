@@ -2,7 +2,9 @@
 
 #include <unordered_map>
 #include <array>
-#include <cstddef>
+#include <SDL3/SDL.h>
+#include <algorithm>
+#include <iostream>
 
 namespace Input {
 
@@ -17,24 +19,17 @@ enum class Action {
     COUNT
 };
 
-extern bool prevMouseState;
-
-constexpr size_t ActionCount = static_cast<size_t>(Action::COUNT);
-
-using KeyCode = int;
+using KeyCode = SDL_Scancode;
 
 void setDefaultBindings();
 
-static bool mouseDown;
-static bool mousePressed;
-static bool mouseReleased;
+void resetFrame();
 
 void getMousePos(float* x, float* y);
+
 bool getMouseState();
 
 void poll();
-
-void resetFrame();
 
 bool isDown(Action action);
 bool isPressed(Action action);

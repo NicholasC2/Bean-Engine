@@ -7,13 +7,15 @@
 
 namespace Texture {
 
-struct Texture;
+struct Texture {
+    SDL_Texture* handle;
+    int w;
+    int h;
+};
 
 void setTextureAlpha(Texture* tex, int alpha);
 
-inline bool ends_with(std::string const & value, std::string const & ending);
-
-Texture* loadTexture(const char* path);
+Texture* loadTexture(const Assets::Asset* asset);
 
 void freeTexture(Texture*& tex);
 

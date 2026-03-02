@@ -1,5 +1,5 @@
 #include "engine/assets.h"
-#include "engine/gfx/window.h"
+#include "engine/gfx/renderer.h"
 #include <SDL3/SDL.h>
 #include <unordered_map>
 #include <filesystem>
@@ -48,7 +48,7 @@ namespace Assets {
             return &it->second;
 
         std::string errorMsg = "Invalid asset location: " + path;
-        Window::showError(errorMsg.c_str());
+        Renderer::showError(errorMsg.c_str());
 
         return {};
     }
