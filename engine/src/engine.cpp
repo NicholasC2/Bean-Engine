@@ -4,7 +4,30 @@
 namespace Engine {
 
     void init() {
+        if (!Renderer::initRenderer()) {
+            Render::showError("failed to initialize SDL Renderer");
+            return;
+        }
+
+        if(!Assets::loadAllAssets()) {
+            Renderer::showError("failed to load assets!");
+            return;
+        }
         
+        Input::setDefaultBindings();
+        
+        if (!Renderer::displayLogo(Renderer::getDefaultLogo())) {
+            shutdown();
+            return;
+        }
+
+        return;
+    }
+
+    void shutdown() {
+        Render::shutdownRenderer();
+        Assets::unloadAll();
+        return;
     }
 
     Texture* getDefaultLogo() {
