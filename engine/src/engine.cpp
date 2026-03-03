@@ -1,6 +1,4 @@
-#include "engine/renderer.h"
-#include "engine/logo_bmp.h"
-#include "engine/engine.h"
+#include "engine/platform.h"
 
 namespace Engine {
 

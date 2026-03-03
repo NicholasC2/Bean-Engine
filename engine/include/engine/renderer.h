@@ -1,10 +1,14 @@
 #pragma once
 
+#include "engine/texture.h"
 #include "engine/input.h"
 #include "engine/assets.h"
 #include <SDL3/SDL.h>
 
 namespace Renderer {
+    
+SDL_Window* window;
+SDL_Renderer* renderer;
 
 bool initRenderer(const char* title);
 
@@ -18,8 +22,8 @@ bool showError(const char* msg);
 
 void pollEvents(bool& running);
 
-void drawTexture2D(Assets::Asset* asset, float x, float y, float scale, int alpha, float angle = 0.0f, int screen = 0);
+void drawTexture2D(Texture::Texture* texture, float x, float y, float scale, int alpha, float angle, int screen);
 
-bool displayLogo(Assets::Asset* asset, float scale = 0.3f);
+bool displayLogo(Texture::Texture* texture, float scale);
 
 }
