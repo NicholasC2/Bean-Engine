@@ -1,5 +1,5 @@
 #include "engine/assets.h"
-#include "engine/gfx/renderer.h"
+#include "engine/renderer.h"
 #include <SDL3/SDL.h>
 #include <unordered_map>
 #include <filesystem>

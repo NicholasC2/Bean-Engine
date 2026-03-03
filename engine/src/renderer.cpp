@@ -1,5 +1,4 @@
-#include "engine/gfx/renderer.h"
-#include "engine/gfx/texture.h"
+#include "engine/renderer.h"
 #include "engine/input.h"
 #include "engine/assets.h"
 #include <SDL3/SDL.h>
@@ -71,34 +70,76 @@ void pollEvents(bool& running) {
     }
 }
 
-void drawTextureOnScreen(Texture::Texture* tex, float x, float y, float w, float h, float angle, int screen) {
-    if (!renderer || !tex || !tex->handle || !window) return;
+inline bool ends_with(std::string const & value, std::string const & ending) {
+    if (ending.size() > value.size()) return false;
+    return std::equal(ending.rbegin(), ending.rend(), value.rbegin());
+}
+
+SDL_Texture* getTexture(Assets::Asset* asset, int alpha) {
+    if(!asset) return nullptr;
+
+    SDL_IOStream* io = SDL_IOFromMem((void*)asset->getData(), asset->getSize());
+    if (!io) {
+        Renderer::showError(SDL_GetError());
+        return nullptr;
+    }
+
+    SDL_Surface* surface = nullptr;
+
+    std::string path = asset->getPath();
+    
+    if(ends_with(path, ".png")) {
+        surface = SDL_LoadPNG_IO(io, 1);
+    } else if(ends_with(std::string(path), ".bmp")) {
+        surface = SDL_LoadBMP_IO(io, 1);
+    }
+
+    if (!surface) {
+        Renderer::showError(SDL_GetError());
+        return nullptr;
+    }
+
+    SDL_Texture* texture = SDL_CreateTextureFromSurface(Renderer::renderer, surface);
+    SDL_DestroySurface(surface);
+
+    if (!texture) {
+        Renderer::showError(SDL_GetError());
+        return nullptr;
+    }
+
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
+    SDL_SetTextureAlphaMod(texture, alpha);
+
+    return texture;
+}
+
+void drawTexture2D(Assets::Asset* asset, float x, float y, float scale, int alpha, float angle, int screen) {
+    if (!renderer || !asset || !asset->isValid() || !window) return;
 
     int winW, winH;
     SDL_GetWindowSizeInPixels(window, &winW, &winH);
 
     float px = x * winH;
     float py = y * winH;
-    float pw = w * winH;
-    float ph = h * winH;
 
+    SDL_Texture *texture = getTexture(asset, alpha);
+
+    float pw = (float(winH) * scale) * (float(texture->w) / float(texture->h));
+    float ph = float(winH) * scale;
+    
     SDL_FRect dstRect = { px - (pw / 2.0f), py - (ph / 2.0f), pw, ph };
     SDL_FPoint center = { pw / 2.0f, ph / 2.0f };
 
-    SDL_RenderTextureRotated(renderer, tex->handle, nullptr, &dstRect, angle, &center, SDL_FLIP_NONE);
+    SDL_RenderTextureRotated(renderer, texture, nullptr, &dstRect, angle, &center, SDL_FLIP_NONE);
 }
 
-bool displayLogo(Texture::Texture* tex) {
-    if(!tex) return false;
-
-    SDL_SetTextureBlendMode(tex->handle, SDL_BLENDMODE_BLEND);
+bool displayLogo(Assets::Asset* asset, float scale) {
+    if(!asset) return false;
 
     Input::setDefaultBindings();
     Uint64 startTicks = SDL_GetTicks();
     bool running = true;
     int i = 0;
-
-    float ratio = (float)tex->handle->h / (float)tex->handle->w;
 
     while(SDL_GetTicks() - startTicks < 4000 && running) {
         Uint64 elapsed = SDL_GetTicks() - startTicks;
@@ -117,9 +158,7 @@ bool displayLogo(Texture::Texture* tex) {
         }
         
         if(elapsed < 3000) { 
-            setTextureAlpha(tex, alpha);
-
-            drawTextureOnScreen(tex, 0.9f, 0.5f, 0.7f, ratio * 0.7f, 0.0f);
+            drawTexture2D(asset, 0.9f, 0.5f, scale, alpha);
         }
 
         Input::poll();

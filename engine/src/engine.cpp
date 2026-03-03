@@ -1,5 +1,4 @@
-#include "engine/gfx/renderer.h"
-#include "engine/gfx/texture.h"
+#include "engine/renderer.h"
 #include "engine/logo_bmp.h"
 #include "engine/engine.h"
 
@@ -22,11 +21,8 @@ namespace Engine {
             "default_logo.bmp",
             std::vector<uint8_t>(__logo_bmp, __logo_bmp + __logo_bmp_size)
         );
-
-        Texture::Texture* logo_tex = Texture::loadTexture(&default_logo);
         
-        if (!Renderer::displayLogo(logo_tex)) {
-            Texture::freeTexture(logo_tex);
+        if (!Renderer::displayLogo(&default_logo)) {
             return false;
         }
 
