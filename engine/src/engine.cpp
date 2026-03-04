@@ -1,5 +1,6 @@
 #include "engine/platform.h"
 #include "engine/logo_bmp.h"
+#include "engine/logo_bmp.h"
 
 namespace Engine {
 
@@ -27,6 +28,8 @@ namespace Engine {
             Texture::freeTexture(default_logo_tex);
             return false;
         }
+
+        Texture::freeTexture(default_logo_tex);
 
         Texture::freeTexture(default_logo_tex);
 
