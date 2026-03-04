@@ -50,9 +50,9 @@ namespace Texture {
     void freeTexture(Texture* tex) {
         if (!tex) return;
 
-        if (tex->texture) {
-            SDL_DestroyTexture(tex->texture);
-            tex->texture = nullptr;
+        if (tex->handle) {
+            SDL_DestroyTexture(tex->handle);
+            tex->handle = nullptr;
         }
 
         delete tex;

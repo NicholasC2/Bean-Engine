@@ -1,6 +1,5 @@
 #pragma once
 
-#include "engine/assets.h"
 #include <SDL3/SDL.h>
 #include <unordered_map>
 #include <filesystem>

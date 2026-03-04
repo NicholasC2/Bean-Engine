@@ -2,10 +2,12 @@
 #include "engine/texture.h"
 #include "engine/input.h"
 #include "engine/assets.h"
+
+#include <cmath>
 #include <SDL3/SDL.h>
 
 namespace Renderer {
-    
+
 SDL_Window* window = nullptr;
 SDL_Renderer* renderer = nullptr;
 
@@ -131,6 +133,60 @@ bool displayLogo(Texture::Texture* texture, float scale) {
     }
 
     return running;
+}
+
+static void projectPoint(float x, float y, float z, float fov, int screenW, int screenH, float& outX, float& outY) {
+    float aspect = float(screenW) / float(screenH);
+    float fovRad = 1.0f / tanf((fov * 0.5f) * (3.14159265f / 180.0f));
+
+    if (z <= 0.01f) z = 0.01f;
+
+    float px = (x * fovRad / z) / aspect;
+    float py = (y * fovRad / z);
+
+    outX = (px + 1.0f) * 0.5f * screenW;
+    outY = (1.0f - py) * 0.5f * screenH;
+}
+
+static float edgeFunction(float ax, float ay, float bx, float by, float cx, float cy)
+{
+    return (cx - ax) * (by - ay) - (cy - ay) * (bx - ax);
+}
+
+void drawTriangle3DTextured(
+    Texture::Texture* texture,
+    float x1, float y1, float z1, float u1, float v1,
+    float x2, float y2, float z2, float u2, float v2,
+    float x3, float y3, float z3, float u3, float v3,
+    float fov)
+{
+    if (!renderer || !texture || !texture->handle || !window) return;
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+
+    int w, h;
+    SDL_GetWindowSizeInPixels(window, &w, &h);
+
+    float sx1, sy1, sx2, sy2, sx3, sy3;
+    projectPoint(x1, y1, z1, fov, w, h, sx1, sy1);
+    projectPoint(x2, y2, z2, fov, w, h, sx2, sy2);
+    projectPoint(x3, y3, z3, fov, w, h, sx3, sy3);
+
+    SDL_Vertex verts[3];
+
+    verts[0].position = { sx1, sy1 };
+    verts[0].color = { 1, 1, 1, 1 };
+    verts[0].tex_coord = { u1, 1.0f - v1 };
+
+    verts[1].position = { sx2, sy2 };
+    verts[1].color = { 1, 1, 1, 1 };
+    verts[1].tex_coord = { u2, 1.0f - v2 };
+
+    verts[2].position = { sx3, sy3 };
+    verts[2].color = { 1, 1, 1, 1 };
+    verts[2].tex_coord = { u3, 1.0f - v3 };
+
+    SDL_RenderGeometry(renderer, texture->handle, verts, 3, nullptr, 0);
 }
 
 }

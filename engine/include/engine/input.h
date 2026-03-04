@@ -1,10 +1,6 @@
 #pragma once
 
-#include <unordered_map>
-#include <array>
 #include <SDL3/SDL.h>
-#include <algorithm>
-#include <iostream>
 
 namespace Input {
 

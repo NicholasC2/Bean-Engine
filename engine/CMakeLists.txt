@@ -19,6 +19,7 @@ else()
         src/engine.cpp
         src/input.cpp
         src/assets.cpp
+        src/texture.cpp
     )
 endif()
 
