@@ -1,4 +1,5 @@
 #include "engine/platform.h"
+#include "engine/logo_bmp.h"
 
 namespace Engine {
 
@@ -19,8 +20,10 @@ namespace Engine {
             "default_logo.bmp",
             std::vector<uint8_t>(__logo_bmp, __logo_bmp + __logo_bmp_size)
         );
+
+        Texture::Texture *default_logo_tex = Texture::loadTexture(&default_logo);
         
-        if (!Renderer::displayLogo(&default_logo)) {
+        if (!Renderer::displayLogo(default_logo_tex)) {
             return false;
         }
 

@@ -5,9 +5,6 @@
 #include <SDL3/SDL.h>
 
 namespace Renderer {
-    
-SDL_Window* window = nullptr;
-SDL_Renderer* renderer = nullptr;
 
 bool initRenderer(const char* title) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
