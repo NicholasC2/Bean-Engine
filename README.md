@@ -27,7 +27,7 @@ target_include_directories(example PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/../../eng
 
 add_dependencies(example engine)
 
-if(PLATFORM_WINDOWS)
+if(NOT PLATFORM_3DS)
     target_compile_definitions(example PRIVATE PLATFORM_WINDOWS=1)
     set_target_properties(example PROPERTIES WIN32_EXECUTABLE ON)
 
@@ -40,6 +40,7 @@ if(PLATFORM_WINDOWS)
 endif()
 
 set(ASSETS_SRC "${CMAKE_CURRENT_SOURCE_DIR}/assets")
+
 add_custom_command(TARGET example POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_directory
         "${ASSETS_SRC}"
