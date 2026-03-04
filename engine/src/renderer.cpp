@@ -1,21 +1,20 @@
 #include "engine/renderer.h"
 #include "engine/texture.h"
 #include "engine/input.h"
-#include "engine/assets.h"
 #include <SDL3/SDL.h>
 
 namespace Renderer {
 
 bool initRenderer(const char* title) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_EVENTS)) {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_Init failed", SDL_GetError(), NULL);
+        Renderer::showError(SDL_GetError());
         return false;
     }
 
     window = SDL_CreateWindow(title, 900, 500, SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
 
     if (!window) {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_CreateWindow failed", SDL_GetError(), NULL);
+        Renderer::showError(SDL_GetError());
         return false;
     }
 
@@ -23,7 +22,7 @@ bool initRenderer(const char* title) {
 
     renderer = SDL_CreateRenderer(window, nullptr);
     if (!renderer) {
-        SDL_ShowSimpleMessageBox(SDL_MESSAGEBOX_ERROR ,"SDL_CreateRenderer failed", SDL_GetError(), NULL);
+        Renderer::showError(SDL_GetError());
         return false;
     }
 

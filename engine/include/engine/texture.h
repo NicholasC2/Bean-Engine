@@ -4,6 +4,7 @@
 #include <SDL3/SDL.h>
 
 namespace Texture {
+
     struct Texture {
         SDL_Texture* handle;
     };

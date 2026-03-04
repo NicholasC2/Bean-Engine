@@ -24,8 +24,11 @@ namespace Engine {
         Texture::Texture *default_logo_tex = Texture::loadTexture(&default_logo);
         
         if (!Renderer::displayLogo(default_logo_tex)) {
+            Texture::freeTexture(default_logo_tex);
             return false;
         }
+
+        Texture::freeTexture(default_logo_tex);
 
         return true;
     }
