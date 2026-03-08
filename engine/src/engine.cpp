@@ -1,6 +1,5 @@
 #include "engine/platform.h"
 #include "engine/logo_bmp.h"
-#include "engine/logo_bmp.h"
 
 namespace Engine {
 

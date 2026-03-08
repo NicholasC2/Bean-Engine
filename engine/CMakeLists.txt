@@ -37,7 +37,7 @@ if(NOT PLATFORM_3DS)
     set(SDL_STATIC ON CACHE BOOL "" FORCE)
     FetchContent_MakeAvailable(SDL3)
 
-    target_link_libraries(engine PUBLIC SDL3::SDL3-static)
+    target_link_libraries(engine PUBLIC SDL3::SDL3-static opengl32)
 endif()
 
 FetchContent_Declare(
