@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_opengl.h>
+#include <glad/glad.h>
 
 namespace Assets {
     class Asset;

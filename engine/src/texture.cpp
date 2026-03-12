@@ -3,7 +3,7 @@
 #include "engine/renderer.h"
 
 #include <SDL3/SDL.h>
-#include <SDL3/SDL_opengl.h>
+#include <glad/glad.h>
 
 namespace Texture {
 
@@ -48,28 +48,35 @@ Texture* loadTexture(Assets::Asset* asset, int alpha) {
     GLuint texID;
     glGenTextures(1, &texID);
     glBindTexture(GL_TEXTURE_2D, texID);
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    int w = formatted->w;
+    int h = formatted->h;
 
     glTexImage2D(
         GL_TEXTURE_2D,
         0,
         GL_RGBA,
-        formatted->w,
-        formatted->h,
+        w,
+        h,
         0,
         GL_RGBA,
         GL_UNSIGNED_BYTE,
         formatted->pixels
     );
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
     SDL_DestroySurface(formatted);
 
     Texture* tex = new Texture;
     tex->handle = texID;
-    tex->width = formatted->w;
-    tex->height = formatted->h;
+    tex->width = w;
+    tex->height = h;
 
     return tex;
 }

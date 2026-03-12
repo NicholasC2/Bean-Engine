@@ -21,6 +21,7 @@ else()
         src/input.cpp
         src/assets.cpp
         src/texture.cpp
+        src/glad.c
     )
 endif()
 
