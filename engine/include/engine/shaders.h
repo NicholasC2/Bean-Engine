@@ -19,16 +19,31 @@ void main(){
 
 inline const char* vertexShader3D = R"glsl(
 #version 330 core
-layout(location=0) in vec3 aPos; // Note: vec3 for 3D
+
+layout(location=0) in vec3 aPos;
 layout(location=1) in vec2 aUV;
+
 out vec2 UV;
+
 uniform float fov;
 uniform float aspect;
-void main(){
-    // Simple perspective math: x' = x/z, y' = y/z
-    float f = 1.0 / tan(fov * 0.5 * 0.0174533);
-    vec4 p = vec4(aPos.x * f, aPos.y * f * aspect, aPos.z, aPos.z);
-    gl_Position = vec4(p.x, p.y, (p.z * 0.01), p.w); // Basic clip space
+
+void main()
+{
+    float near = 0.1;
+    float far = 100.0;
+
+    float f = 1.0 / tan(radians(fov) * 0.5);
+
+    mat4 proj = mat4(
+        f/aspect, 0, 0, 0,
+        0, f, 0, 0,
+        0, 0, (far+near)/(near-far), -1,
+        0, 0, (2*far*near)/(near-far), 0
+    );
+
+    gl_Position = proj * vec4(aPos, 1.0);
+
     UV = aUV;
 }
 )glsl";

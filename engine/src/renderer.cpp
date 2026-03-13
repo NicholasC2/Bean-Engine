@@ -71,6 +71,8 @@ bool initRenderer(const char* title) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LESS);
+    glDepthMask(GL_TRUE);
 
     prog2D = createShaderProgram(vertexShader2D, fragmentShader);
     prog3D = createShaderProgram(vertexShader3D, fragmentShader);
