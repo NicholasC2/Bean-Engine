@@ -1,7 +1,6 @@
 #pragma once
 
 #include "engine/assets.h"
-#include <SDL3/SDL.h>
 
 namespace Texture {
 

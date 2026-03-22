@@ -1,12 +1,12 @@
 #pragma once
 
-#include <string>
-#include "render.h"
+#include "engine/assets.h"
 #include <unordered_map>
 #include <filesystem>
 #include <fstream>
 #include <vector>
 #include <cstdint>
+#include <algorithm>
 
 namespace Assets {
     class Asset {
