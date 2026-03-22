@@ -5,7 +5,9 @@
 namespace Texture {
 
     struct Texture {
-        SDL_Texture* handle;
+        GLuint handle;
+        int width;
+        int height;
     };
 
     Texture* loadTexture(Assets::Asset* asset, int alpha = 255);
